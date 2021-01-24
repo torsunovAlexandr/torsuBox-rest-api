@@ -1,61 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Laravel 8.7.1 REST API With Simple API Authentication
+A PHP Laravel Authentication API with E-mail verification, developed with Laravel 8.7.1 framework.
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## Installation steps
 
-## About Laravel
+Follow the bellow steps to install and set up the application.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Step 1: Clone the Application**<br>
+You can download the ZIP file or git clone from my repo into your project  directory.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Step 2: Configure the Application**<br>
+After you clone the repo in to your project folder the project need to be set up by following commands-
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- In terminal go to your project directory and Run
 
-## Learning Laravel
+        composer install 
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Then copy the .env.example file to .env file in the project root folder
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Edit the .env file and fill all required data for the bellow variables
 
-## Laravel Sponsors
+        APP_URL=http://localhost //your application domain URL go here
+    
+        DB_HOST=127.0.0.1 // Your DB host IP. Here we are assumed it to be local host
+        DB_PORT=3306 //Port if you are using except the default
+        DB_DATABASE=name_of_your_database
+        DB_USERNAME=db_user_name
+        DB_PASSWORD=db_password
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- To set the Application key run the bellow command in your terminal.
 
-### Premium Partners
+        php artisan key:generate
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+- Make your storage and bootstrapp folder writable by your application user.
 
-## Contributing
+- Create all the necessary tables need for the application by runing the bellow command.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+        php artisan migrate
 
-## Code of Conduct
+Thats all! The application is configured now.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+## API Endpoints and Routes
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Laravel follows the Model View Controller (MVC) pattern I have creatd models associated with each resource. You can check in the **routes/api.php** file for all the routes that map to controllers in order to send out JSON data that make requests to our API.
 
-## License
+Bellow are the all resources API endpoints -
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+        GET    | api/files  | api,auth:api
+
+        POST   | api/files | api,auth:api   Body {"name":"test","format":"txt","contents":"Hello World"}
+
+        GET    | api/files/{fileName} | api,auth:api
+
+        PUT    | api/files?name={name}&format={format}&contents={content} | api,auth:api 
+
+        DELETE | api/files/{fileName} | api,auth:api
+
+        POST   | api/login | api,guest Body {"email":"test@mail.ru","password":"123456"}'
+
+        POST   | api/register | api,guest Body {"name":"test","email":"test@mail.ru","password":"123456","c_password":"123456"}
+
+
+## API Authentication
+
+All the api endpoints are protected by a simple API Authentication process. To access the resource data, the request header need token field. The **token** value need to be taken from the **api/login** API by passing valid email and password.
+
+**Example Of Login API request**
+
+        http://localhost:8001/api/login Body {"email":"test@mail.ru","password":"123456"}'
+
+**Response Of Valid Login API**
+
+        {
+    "success": true,
+    "data": {
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYWEwMTJkMTc4ZGQyY2UyYWNjNzNlODAxMzVmZmI0MGFhMzk2MzdmNWUwYjM2NWRhZWU3NWM1NmY2OTE0MmM0Y2JhMTJiMTYzYzcyZGU2N2UiLCJpYXQiOjE2MTE0OTI4ODEsIm5iZiI6MTYxMTQ5Mjg4MSwiZXhwIjoxNjQzMDI4ODgxLCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.JGyQK1h406oFhT9txCohgHpaPebn1EwoEvokVOWXfR-7XQgGMXpCs4KQ07iTb1N3uisXUUl3sP_YndcXsA_ZTXvik49F1-PyyFdvkbxgfMV_we5W90DrSdaKZ4PR_CAAbZjydKuNurv8ju9HMO5DNF5lxPaMI6fZr2IRH8kDVSJZkkk_hmHIxd5bhMILvxq9rdOF785OKbiSYPFzN3_RFKIGmZQwiv6kdIqdshoqmQCDVS-i1kBPgkV5eF6vfITEbx73CqoY4TMGayAEs_yP5_iSpTzXgR7LG9Y3CLz08GhOZElo8fxOXLJhr10JEC63E1A5KvtLbFeLEo2y-MCtsB1Nt0pUAT1iVCeWkx8zb790suSSb4DCXR8wcyHFQhdzTQxIgG0mVGNsMZG8FYNWGj_EeWMgYjdc1eEneyM3Y8kceUiKERdsyCcyOTOpKLDvfF4gSbWW5QHPMf8tF3sCJrpofUK89SBsL4HXgekmd0hSZjjHOE0cQljZgfMnzUDTYtI2dE8PnEXHfNiGM8HaHQMvJtNLI6Q1gOqJo0lYPnJpcg7xU2xfz911oXoHIR0Mhzz8nnZWF4Xy1lurfdaREhaKC-rIlwh_n8G0K6WaPc48VH8MINofFOOls0-zW8gh-FcTk5W1A_vZnjXOV9lq8LsSGhLNjDnnSB7ylapoWdY",
+        "name": "torsunov"
+    },
+    "message": "Авторизация прошла успешно"
+}
+
+
+## Test Case
+
+I have created several test case to test all the API endpoints by using Laravel TestCase set up.
+
+To execute all the test case, move to the project root folder in terminal and then run -
+
+        php artisan test
+

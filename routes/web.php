@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Storage;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,4 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+Route::get('/storage/{filename}', function ($filename) {
+    try {
+        return Storage::disk('public')->response("userFiles/{$filename}");
+    } catch (\Exception $exception) {
+        abort(404);
+    }
 });
