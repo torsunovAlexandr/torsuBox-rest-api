@@ -89,3 +89,9 @@ To execute all the test case, move to the project root folder in terminal and th
 
         php artisan test
 
+## Further work plan
+
+1) Introduce a mechanism for the differentiation of rights. To do this, you need to create a table in the database, which will record the path to the file and the user who created this file. And let only the user who created it work with the file.
+2) Store files in folders with user ID. Now different users will not be able to create files with the same name. The program is designed for one user
+3) I need to figure out how to set up Docker. On windows I couldn't do this.
+
