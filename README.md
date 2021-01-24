@@ -46,15 +46,15 @@ Laravel follows the Model View Controller (MVC) pattern I have creatd models ass
 
 Bellow are the all resources API endpoints -
 
-        GET    | api/files  | api,auth:api
+        GET    | api/files  | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
         POST   | api/files | api,auth:api   Body {"name":"test","format":"txt","contents":"Hello World"}
 
-        GET    | api/files/{fileName} | api,auth:api
+        GET    | api/files/{fileName} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
-        PUT    | api/files?name={name}&format={format}&contents={content} | api,auth:api 
+        PUT    | api/files?name={name}&format={format}&contents={content} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
-        DELETE | api/files/{fileName} | api,auth:api
+        DELETE | api/files/{fileName} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
         POST   | api/login | api,guest Body {"email":"test@mail.ru","password":"123456"}'
 
