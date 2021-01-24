@@ -37,6 +37,10 @@ After you clone the repo in to your project folder the project need to be set up
 
         php artisan migrate
 
+- Fill default data if your need by running bellow command.
+
+        php artisan db:seed
+
 Thats all! The application is configured now.
 
 

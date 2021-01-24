@@ -13,7 +13,7 @@ class FilesTest extends TestCase
     {
         parent::setUp();
         //формируем токен авторизации
-        if(Auth::attempt(['email' => 'torsunov@mail.ru', 'password' => "123456"])) {
+        if(Auth::attempt(['email' => 'admin@admin.ru', 'password' => "123456"])) {
             $user = Auth::user();
             $token = $user->createToken('MyApp')->accessToken;
             $this->headers = ['Authorization' => "Bearer $token"];

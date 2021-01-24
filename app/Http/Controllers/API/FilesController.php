@@ -104,13 +104,15 @@ class FilesController extends BaseController
             'name' => 'required',
             'format' => [
                 'required',
-                Rule::In(['txt', 'text', 'log']), //Обновлять содержимое можно только у текстовых файлов
             ],
             'contents'=>'required'
         ]);
         $name = $input['name'];
         $format = $input['format'];
         $contents = $input['contents'];
+        if(!in_array($format,['txt', 'text', 'log'])) {
+            return $this->sendResponse(null, 'Обновлять содержимое можно только у текстовых файлов');
+        }
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
