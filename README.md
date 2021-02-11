@@ -37,6 +37,10 @@ After you clone the repo in to your project folder the project need to be set up
 
         php artisan migrate
 
+- Fill default data if your need by running bellow command.
+
+        php artisan db:seed
+
 Thats all! The application is configured now.
 
 
@@ -46,15 +50,15 @@ Laravel follows the Model View Controller (MVC) pattern I have creatd models ass
 
 Bellow are the all resources API endpoints -
 
-        GET    | api/files  | api,auth:api
+        GET    | api/files  | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
         POST   | api/files | api,auth:api   Body {"name":"test","format":"txt","contents":"Hello World"}
 
-        GET    | api/files/{fileName} | api,auth:api
+        GET    | api/files/{fileName} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
-        PUT    | api/files?name={name}&format={format}&contents={content} | api,auth:api 
+        PUT    | api/files?name={name}&format={format}&contents={content} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
-        DELETE | api/files/{fileName} | api,auth:api
+        DELETE | api/files/{fileName} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
         POST   | api/login | api,guest Body {"email":"test@mail.ru","password":"123456"}'
 
@@ -88,4 +92,10 @@ I have created several test case to test all the API endpoints by using Laravel 
 To execute all the test case, move to the project root folder in terminal and then run -
 
         php artisan test
+
+## Further work plan
+
+1) Introduce a mechanism for the differentiation of rights. To do this, you need to create a table in the database, which will record the path to the file and the user who created this file. And let only the user who created it work with the file.
+2) Store files in folders with user ID. Now different users will not be able to create files with the same name. The program is designed for one user
+3) I need to figure out how to set up Docker. On windows I couldn't do this.
 

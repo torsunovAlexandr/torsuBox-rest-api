@@ -59,10 +59,11 @@ class GeneralTest extends TestCase
         //create file
         $params = [
             'name'=>$faker->numerify('testFile########'),
-            'format'=>"txt",
+            'format'=>$faker->fileExtension,
             "contents"=>$faker->text
         ];
         $fileName = $params["name"];
+        $fileExtention = $params["format"];
         $response = $this->json('POST', '/api/files', $params, $headers);
         $response
             ->assertStatus(200)
@@ -71,10 +72,10 @@ class GeneralTest extends TestCase
                 'data',
                 'message'
             ]);
-        Storage::disk('public')->assertExists("userFiles/".$fileName.".".$params["format"]);
+        Storage::disk('public')->assertExists("userFiles/".$fileName.".".$fileExtention);
 
         //update file
-        $response = $this->json('PUT', '/api/files?name='.$fileName.'&format=txt&contents='.$faker->text, [], $headers);
+        $response = $this->json('PUT', '/api/files?name='.$fileName.'&format=.'.$fileExtention.'&contents='.$faker->text, [], $headers);
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
@@ -83,7 +84,7 @@ class GeneralTest extends TestCase
                 'message'
             ]);
         //get file content
-        $response = $this->json('get', '/api/files/'.$fileName.'.txt', [], $headers);
+        $response = $this->json('get', '/api/files/'.$fileName.'.'.$fileExtention, [], $headers);
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
@@ -101,7 +102,7 @@ class GeneralTest extends TestCase
                 'message'
             ]);
         //delete a file
-        $response = $this->json('DELETE', '/api/files/'.$fileName.'.txt', [], $headers);
+        $response = $this->json('DELETE', '/api/files/'.$fileName.'.'.$fileExtention, [], $headers);
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
@@ -109,6 +110,6 @@ class GeneralTest extends TestCase
                 'data',
                 'message'
             ]);
-        Storage::disk('public')->assertMissing("userFiles/'.$fileName.'.txt");
+        Storage::disk('public')->assertMissing("userFiles/'.$fileName.'.".$fileExtention);
     }
 }

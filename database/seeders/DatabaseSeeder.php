@@ -1,18 +1,56 @@
 <?php
 
-namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
+use Carbon\Carbon as Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Run the database seeds.
      *
      * @return void
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        if (DB::connection()->getDriverName() == 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        }
+
+        if (DB::connection()->getDriverName() == 'mysql') {
+            DB::table('users')->truncate();
+        } elseif (DB::connection()->getDriverName() == 'sqlite') {
+            DB::statement('DELETE FROM  users');
+        } else {
+            //For PostgreSQL or anything else
+            DB::statement('TRUNCATE TABLE  users CASCADE');
+        }
+
+
+        //Add the master administrator, user id of 1
+        $users = [
+            [
+                'name'              => 'Administrator',
+                'email'             => 'admin@admin.ru',
+                'password'          => bcrypt('123456'),
+                'email_verified_at' => Carbon::now(),
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
+            ],
+            [
+                'name'              => 'Default',
+                'email'             => 'user@user.com',
+                'password'          => bcrypt('123456'),
+                'email_verified_at' => Carbon::now(),
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
+            ],
+        ];
+
+        DB::table('users')->insert($users);
+
+        if (DB::connection()->getDriverName() == 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
     }
 }
