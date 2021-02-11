@@ -19,7 +19,7 @@ class FilesController extends BaseController
     public function index()
     {
         $listOfFiles = Storage::files("public/userFiles");
-        return $this->sendResponse($listOfFiles, 'Список файлов успешно получен');
+        return $this->sendResponse($listOfFiles, 'File list received successfully');
     }
     /**
      * Создать файл
@@ -35,7 +35,7 @@ class FilesController extends BaseController
             $filenameWithExt = $request->file('contents')->getClientOriginalName();
             $exists = Storage::disk('public')->exists("userFiles/".$filenameWithExt);
             if ($exists === true) {
-                return $this->sendError('Файл с таким именем уже создан. Укажите другое имя');
+                return $this->sendError('A file with this name has already been created. Please enter another name');
             }
             // Сохраняем файл
             $request->file('contents')->storeAs('public/userFiles/', $filenameWithExt);
@@ -52,13 +52,13 @@ class FilesController extends BaseController
             }
             $exists = Storage::disk('public')->exists("userFiles/".$filename.".".$extention);
             if ($exists === true) {
-                return $this->sendError('Файл с таким именем уже создан. Укажите другое имя');
+                return $this->sendError('A file with this name has already been created. Please enter another name');
             }
             Storage::put("public/userFiles/".$filename.".".$extention, '');
         }
 
 
-        return $this->sendResponse(null, 'Файл создан');
+        return $this->sendResponse(null, 'File created');
     }
 
     /**
@@ -75,7 +75,7 @@ class FilesController extends BaseController
         $exists = Storage::disk('public')->exists("/userFiles/".$name);
 
         if ($exists === false) {
-            return $this->sendError('Файл не найден');
+            return $this->sendError('File not found');
         }
         $pos = strpos($name, '.');
         $extentionFile = substr($name, $pos+1);
@@ -83,11 +83,11 @@ class FilesController extends BaseController
         //смотреть содержимое можно только у текстовых файлов
         if(in_array($extentionFile,$textExtentionArr)) {
             $file = Storage::disk('public')->get("/userFiles/".$name);
-            return $this->sendResponse($file, 'Содержимое файла успешно получено');
+            return $this->sendResponse($file, 'The contents of the file received successfully');
         } else {
             $file_path = Storage::url($name);
             $url = asset($file_path);
-            return $this->sendResponse($url, 'Ссылка на файл успешно получено');
+            return $this->sendResponse($url, 'File link successfully received');
         }
     }
 
@@ -116,11 +116,11 @@ class FilesController extends BaseController
         }
         $exists = Storage::disk('public')->exists("/userFiles/".$name.".".$format);
         if ($exists === false) {
-            return $this->sendError('Файл с таким именем не найден');
+            return $this->sendError('A file with this name was not found');
         }
         //$contents = $contents;
         Storage::put("public/userFiles/".$name.".".$format, $contents);
-        return $this->sendResponse($contents, 'Файл успешно обновлён');
+        return $this->sendResponse($contents, 'The file has been successfully updated');
     }
 
     /**
@@ -133,9 +133,9 @@ class FilesController extends BaseController
     {
         $exists = Storage::disk('public')->exists("/userFiles/".$name);
         if ($exists === false) {
-            return $this->sendError('Файл с таким именем не найден');
+            return $this->sendError('A file with this name was not found');
         }
         Storage::delete("public/userFiles/".$name);
-        return $this->sendResponse([], 'Файл успешно удалён');
+        return $this->sendResponse([], 'The file was successfully deleted');
     }
 }

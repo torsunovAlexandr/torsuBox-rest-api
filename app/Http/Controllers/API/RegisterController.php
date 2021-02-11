@@ -32,13 +32,13 @@ class RegisterController extends BaseController
         $input['password'] = bcrypt($input['password']);
 
         if (!empty(User::where('email', '=', $input['email'])->first())) {
-            return $this->sendError('Это имя пользователя уже занято. Попробуйте другое.');
+            return $this->sendError('This username is already taken. Enter a different username');
         };
         $user = User::create($input);
         $success['token'] =  $user->createToken('MyApp')->accessToken;
         $success['name'] =  $user->name;
 
-        return $this->sendResponse($success, 'Регистрация успешно завершена');
+        return $this->sendResponse($success, 'Registration is successfully completed');
     }
 
     /**
@@ -53,10 +53,10 @@ class RegisterController extends BaseController
             $success['token'] =  $user->createToken('MyApp')-> accessToken;
             $success['name'] =  $user->name;
 
-            return $this->sendResponse($success, 'Авторизация прошла успешно');
+            return $this->sendResponse($success, 'Authorization was successful');
         }
         else{
-            return $this->sendError('Ошибка авторизации.', ['error'=>'Пожалуйста, проверьте правильность написания логина и пароля.']);
+            return $this->sendError('Authorization error.', ['error'=>'Please make sure that your username and password are spelled correctly.']);
         }
     }
 }
