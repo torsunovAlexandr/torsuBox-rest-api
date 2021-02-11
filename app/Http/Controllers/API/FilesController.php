@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cache;
 
 class FilesController extends BaseController
@@ -14,11 +16,17 @@ class FilesController extends BaseController
     /**
      * Получить список файлов
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $listOfFiles = Storage::files("public/userFiles");
+        $input = $request->all();
+        $limit = !empty($input['limit']) ? $input['limit'] : 10;
+        $listOfFiles = DB::table('files')
+            ->select('name', 'user_id')
+            ->limit($limit)
+            ->get();
         return $this->sendResponse($listOfFiles, 'File list received successfully');
     }
     /**
@@ -54,6 +62,14 @@ class FilesController extends BaseController
             if ($exists === true) {
                 return $this->sendError('A file with this name has already been created. Please enter another name');
             }
+
+            DB::table('files')->insert([
+                'name' => $filename.".".$extention,
+                'path' => "userFiles/".$filename.".".$extention,
+                'user_id' => Auth::user()->getAuthIdentifier(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]);
             Storage::put("public/userFiles/".$filename.".".$extention, '');
         }
 
@@ -63,32 +79,36 @@ class FilesController extends BaseController
 
     /**
      * У текстовых файлов возвращает содержимое у остальных типов ссылку на файл
-     * @param  string  $name
+     * @param  integer  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($name)
+    public function show($id)
     {
         //пока не придумал где в приложении использовать кеширование
         Cache::remember('test',now()->addMinutes(10), function () {
            return 'chikibriki';
         });
-        $exists = Storage::disk('public')->exists("/userFiles/".$name);
-
+        //var_dump($id);
+        $fileInfo = DB::table('files')
+            ->select('path', 'name')
+            ->where('id','=', $id)
+            ->first();
+        $extension = pathinfo($fileInfo->name)['extension'];
+        $exists = Storage::disk('public')->exists($fileInfo->path);
         if ($exists === false) {
             return $this->sendError('File not found');
         }
-        $pos = strpos($name, '.');
-        $extentionFile = substr($name, $pos+1);
         $textExtentionArr = ['txt', 'log','text'];
         //смотреть содержимое можно только у текстовых файлов
-        if(in_array($extentionFile,$textExtentionArr)) {
-            $file = Storage::disk('public')->get("/userFiles/".$name);
+        if(in_array($extension,$textExtentionArr)) {
+            $file = Storage::disk('public')->get($fileInfo->path);
             return $this->sendResponse($file, 'The contents of the file received successfully');
         } else {
-            $file_path = Storage::url($name);
+            $file_path = Storage::url($fileInfo->name);
             $url = asset($file_path);
             return $this->sendResponse($url, 'File link successfully received');
         }
+
     }
 
     /**
@@ -128,16 +148,20 @@ class FilesController extends BaseController
     /**
      * Удалить файл
      *
-     * @param  string  $name
+     * @param  integer  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($name)
+    public function destroy($id)
     {
-        $exists = Storage::disk('public')->exists("/userFiles/".$name);
+        $fileInfo = DB::table('files')
+            ->select('path')
+            ->where('id','=', $id)
+            ->first();
+        $exists = Storage::disk('public')->exists($fileInfo->path);
         if ($exists === false) {
             return $this->sendError('A file with this name was not found');
         }
-        Storage::delete("public/userFiles/".$name);
+        Storage::disk('public')->delete($fileInfo->path);
         return $this->sendResponse([], 'The file was successfully deleted');
     }
 }
