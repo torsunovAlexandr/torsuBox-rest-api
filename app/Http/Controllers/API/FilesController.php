@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Cache;
 
 class FilesController extends BaseController
 {
@@ -24,7 +23,7 @@ class FilesController extends BaseController
         $input = $request->all();
         $limit = !empty($input['limit']) ? $input['limit'] : 10;
         $listOfFiles = DB::table('files')
-            ->select('name', 'user_id')
+            ->select('id','name', 'user_id')
             ->limit($limit)
             ->get();
         return $this->sendResponse($listOfFiles, 'File list received successfully');
@@ -84,11 +83,6 @@ class FilesController extends BaseController
      */
     public function show($id)
     {
-        //пока не придумал где в приложении использовать кеширование
-        Cache::remember('test',now()->addMinutes(10), function () {
-           return 'chikibriki';
-        });
-        //var_dump($id);
         $fileInfo = DB::table('files')
             ->select('path', 'name')
             ->where('id','=', $id)
@@ -156,12 +150,14 @@ class FilesController extends BaseController
         $fileInfo = DB::table('files')
             ->select('path')
             ->where('id','=', $id)
+            ->where('user_id','=', Auth::user()->getAuthIdentifier())
             ->first();
         $exists = Storage::disk('public')->exists($fileInfo->path);
         if ($exists === false) {
             return $this->sendError('A file with this name was not found');
         }
         Storage::disk('public')->delete($fileInfo->path);
+        DB::table('files')->where('id','=', $id)->delete();
         return $this->sendResponse([], 'The file was successfully deleted');
     }
 }

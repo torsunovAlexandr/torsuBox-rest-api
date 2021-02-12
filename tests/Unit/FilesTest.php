@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Storage;
 
@@ -71,8 +72,13 @@ class FilesTest extends TestCase
      */
     public function testGetContents()
     {
+        $fileInfo = DB::table('files')
+            ->select('id')
+            ->where('name','=', 'test.txt')
+            ->where('user_id','=', Auth::user()->getAuthIdentifier())
+            ->first();
         if(!empty($this->headers)) {
-            $response = $this->json('get', '/api/files/test.txt', [], $this->headers);
+            $response = $this->json('get', '/api/files/'.$fileInfo->id, [], $this->headers);
             $response
                 ->assertStatus(200)
                 ->assertJsonStructure([
@@ -107,8 +113,13 @@ class FilesTest extends TestCase
      */
     public function testDeleteFile()
     {
+        $fileInfo = DB::table('files')
+            ->select('id')
+            ->where('name','=', 'test.txt')
+            ->where('user_id','=', Auth::user()->getAuthIdentifier())
+            ->first();
         if(!empty($this->headers)) {
-            $response = $this->json('DELETE', '/api/files/test.txt', [], $this->headers);
+            $response = $this->json('DELETE', '/api/files/'.$fileInfo->id, [], $this->headers);
             $response
                 ->assertStatus(200)
                 ->assertJsonStructure([

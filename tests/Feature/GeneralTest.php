@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -64,6 +66,7 @@ class GeneralTest extends TestCase
         ];
         $fileName = $params["name"];
         $fileExtention = $params["format"];
+
         $response = $this->json('POST', '/api/files', $params, $headers);
         $response
             ->assertStatus(200)
@@ -73,7 +76,11 @@ class GeneralTest extends TestCase
                 'message'
             ]);
         Storage::disk('public')->assertExists("userFiles/".$fileName.".".$fileExtention);
-
+        $fileInfo = DB::table('files')
+            ->select('id')
+            ->where('name','=', $fileName.".".$fileExtention)
+            ->where('user_id','=', Auth::user()->getAuthIdentifier())
+            ->first();
         //update file
         $response = $this->json('PUT', '/api/files?name='.$fileName.'&format=.'.$fileExtention.'&contents='.$faker->text, [], $headers);
         $response
@@ -84,7 +91,7 @@ class GeneralTest extends TestCase
                 'message'
             ]);
         //get file content
-        $response = $this->json('get', '/api/files/'.$fileName.'.'.$fileExtention, [], $headers);
+        $response = $this->json('get', '/api/files/'.$fileInfo->id, [], $headers);
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
@@ -102,7 +109,7 @@ class GeneralTest extends TestCase
                 'message'
             ]);
         //delete a file
-        $response = $this->json('DELETE', '/api/files/'.$fileName.'.'.$fileExtention, [], $headers);
+        $response = $this->json('DELETE', '/api/files/'.$fileInfo->id, [], $headers);
         $response
             ->assertStatus(200)
             ->assertJsonStructure([

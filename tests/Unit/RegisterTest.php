@@ -44,7 +44,7 @@ class RegisterTest extends TestCase
     public function testLogin()
     {
         $params = [
-            'email'=>'test@mail.ru',
+            'email'=>'admin@admin.ru',
             "password"=>"123456",
         ];
         $response = $this->json('POST', '/api/login', $params);
