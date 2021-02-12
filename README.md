@@ -46,7 +46,7 @@ Thats all! The application is configured now.
 
 ## API Endpoints and Routes
 
-Laravel follows the Model View Controller (MVC) pattern I have creatd models associated with each resource. You can check in the **routes/api.php** file for all the routes that map to controllers in order to send out JSON data that make requests to our API.
+Laravel follows the Model View Controller (MVC) pattern I have created models associated with each resource. You can check in the **routes/api.php** file for all the routes that map to controllers in order to send out JSON data that make requests to our API.
 
 Bellow are the all resources API endpoints -
 
@@ -54,11 +54,11 @@ Bellow are the all resources API endpoints -
 
         POST   | api/files | api,auth:api   Body {"name":"test","format":"txt","contents":"Hello World"}
 
-        GET    | api/files/{fileName} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
+        GET    | api/files/{id} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
         PUT    | api/files?name={name}&format={format}&contents={content} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
-        DELETE | api/files/{fileName} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
+        DELETE | api/files/{id} | api,auth:api Headers {"Accept":"application/json","Authorization":"Bearer {token}"}
 
         POST   | api/login | api,guest Body {"email":"test@mail.ru","password":"123456"}'
 
@@ -71,7 +71,7 @@ All the api endpoints are protected by a simple API Authentication process. To a
 
 **Example Of Login API request**
 
-        http://localhost:8001/api/login Body {"email":"test@mail.ru","password":"123456"}'
+        http://localhost:8001/api/login Body {"email":"admin@admin.ru","password":"123456"}'
 
 **Response Of Valid Login API**
 
@@ -79,9 +79,9 @@ All the api endpoints are protected by a simple API Authentication process. To a
     "success": true,
     "data": {
         "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYWEwMTJkMTc4ZGQyY2UyYWNjNzNlODAxMzVmZmI0MGFhMzk2MzdmNWUwYjM2NWRhZWU3NWM1NmY2OTE0MmM0Y2JhMTJiMTYzYzcyZGU2N2UiLCJpYXQiOjE2MTE0OTI4ODEsIm5iZiI6MTYxMTQ5Mjg4MSwiZXhwIjoxNjQzMDI4ODgxLCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.JGyQK1h406oFhT9txCohgHpaPebn1EwoEvokVOWXfR-7XQgGMXpCs4KQ07iTb1N3uisXUUl3sP_YndcXsA_ZTXvik49F1-PyyFdvkbxgfMV_we5W90DrSdaKZ4PR_CAAbZjydKuNurv8ju9HMO5DNF5lxPaMI6fZr2IRH8kDVSJZkkk_hmHIxd5bhMILvxq9rdOF785OKbiSYPFzN3_RFKIGmZQwiv6kdIqdshoqmQCDVS-i1kBPgkV5eF6vfITEbx73CqoY4TMGayAEs_yP5_iSpTzXgR7LG9Y3CLz08GhOZElo8fxOXLJhr10JEC63E1A5KvtLbFeLEo2y-MCtsB1Nt0pUAT1iVCeWkx8zb790suSSb4DCXR8wcyHFQhdzTQxIgG0mVGNsMZG8FYNWGj_EeWMgYjdc1eEneyM3Y8kceUiKERdsyCcyOTOpKLDvfF4gSbWW5QHPMf8tF3sCJrpofUK89SBsL4HXgekmd0hSZjjHOE0cQljZgfMnzUDTYtI2dE8PnEXHfNiGM8HaHQMvJtNLI6Q1gOqJo0lYPnJpcg7xU2xfz911oXoHIR0Mhzz8nnZWF4Xy1lurfdaREhaKC-rIlwh_n8G0K6WaPc48VH8MINofFOOls0-zW8gh-FcTk5W1A_vZnjXOV9lq8LsSGhLNjDnnSB7ylapoWdY",
-        "name": "torsunov"
+        "name": "Administrator"
     },
-    "message": "Авторизация прошла успешно"
+    "message": "Authorization was successful"
 }
 
 
@@ -92,10 +92,4 @@ I have created several test case to test all the API endpoints by using Laravel 
 To execute all the test case, move to the project root folder in terminal and then run -
 
         php artisan test
-
-## Further work plan
-
-1) Introduce a mechanism for the differentiation of rights. To do this, you need to create a table in the database, which will record the path to the file and the user who created this file. And let only the user who created it work with the file.
-2) Store files in folders with user ID. Now different users will not be able to create files with the same name. The program is designed for one user
-3) I need to figure out how to set up Docker. On windows I couldn't do this.
 
